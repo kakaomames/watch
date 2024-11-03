@@ -6,6 +6,16 @@ app = Flask(__name__)
 # InvidiousインスタンスのURL
 BASE_URL = "https://inv.nadeko.net/api/v1"
 
+# ホームページのルート
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+# ホームのルート
+@app.route("/home")
+def home():
+    return render_template("home.html")
+    
 # 動画ページのルート
 @app.route("/watch")
 def watch():
