@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ channel.name }}</title>
+</head>
+<body>
+    <h1>{{ channel.name }}</h1>
+    <p>{{ channel.description }}</p>
+    <h2>動画</h2>
+    <ul>
+        {% for video in channel.videos %}
+            <li>
+                <a href="/watch?v={{ video.videoId }}">{{ video.title }}</a>
+                - 再生回数: {{ video.viewCount }}
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
