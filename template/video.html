@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ video.title }}</title>
+</head>
+<body>
+    <h1>{{ video.title }}</h1>
+    
+    <video width="560" height="315" controls>
+        <source src="{{ stream_url }}" type="video/mp4">
+        お使いのブラウザは動画再生に対応していません。
+    </video>
+    
+    <p>{{ video.description }}</p>
+    <p>チャンネル: <a href="/channel/{{ video.authorId }}">{{ video.author }}</a></p>
+    
+    <h2>関連動画</h2>
+    <ul>
+        {% for related in video.relatedVideos %}
+            <li>
+                <a href="/watch?v={{ related.videoId }}">{{ related.title }}</a> by 
+                <a href="/channel/{{ related.authorId }}">{{ related.author }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
