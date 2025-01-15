@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="video-title"></title>
+</head>
+<body>
+  <form class="pure-form" action="/v/search" method="get">
+     <fieldset>
+          <input type="search" id="searchbox" autocomplete="on" autocorrect="on" autocapitalize="none" spellcheck="false" name="q" placeholder="検索" title="検索">
+     </fieldset>
+  </form>  
+  <!-- 動画埋め込み -->
+  <div id="player"></div>
+  
+  <!-- 動画のタイトルと概要 -->
+  <div id="video-details">
+    <h2 id="video-title"></h2>
+    <p id="video-description"></p>
+  </div>
+
+  <!-- チャンネル情報 -->
+  <div id="channel-info"></div>
+
+  <script>
+    const API_KEY = 'AIzaSyCfLrK2FPzEZllvwhjmugZ8Bwvzp6GRVpU'; // ユーザー提供のAPIキー
+    const params = new URLSearchParams(window.location.search);
+    const videoId = params.get('v');
+
+    const playerDiv = document.getElementById('player');
+    const videoTitleDiv = document.getElementById('video-title');
+    const videoDescriptionDiv = document.getElementById('video-description');
+    const channelInfoDiv = document.getElementById('channel-info');
+
+    if (videoId) {
+      // 動画を埋め込む
+      playerDiv.innerHTML = `
+        <video controls autoplay poster="https://img.youtube.com/vi/${videoId}/0.jpg" width="640" height="360">
+          <source src="https://inv-ca1-c.nadeko.net/latest_version?id=${videoId}&itag=18" type="video/mp4">
+          お使いのブラウザは動画タグをサポートしていません。
+        </video>
+      `;
+
+      // 動画情報を取得
+      fetch(`https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=snippet&key=${API_KEY}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.items && data.items.length > 0) {
+            const video = data.items[0];
+            const title = video.snippet.title;
+            const description = video.snippet.description;
+            const channelId = video.snippet.channelId;
+            const channelTitle = video.snippet.channelTitle;
+
+            // タイトルと概要を表示
+            videoTitleDiv.textContent = title;
+            videoDescriptionDiv.textContent = description;
+
+            // チャンネル情報を取得
+            fetch(`https://www.googleapis.com/youtube/v3/channels?id=${channelId}&part=snippet&key=${API_KEY}`)
+              .then(response => response.json())
+              .then(data => {
+                if (data.items && data.items.length > 0) {
+                  const channel = data.items[0];
+                  const channelIcon = channel.snippet.thumbnails.default.url;
+
+                  // チャンネル情報を表示
+                  channelInfoDiv.innerHTML = `
+                    <a href="/v/channel/?c=${channelId}">
+                      <img src="${channelIcon}" alt="${channelTitle}" style="width:50px; height:50px; border-radius:50%;">
+                      ${channelTitle}
+                    </a>
+                  `;
+                }
+              })
+              .catch(error => {
+                channelInfoDiv.textContent = 'チャンネル情報の取得に失敗しました。';
+                console.error('チャンネル情報取得エラー:', error);
+              });
+          }
+        })
+        .catch(error => {
+          videoTitleDiv.textContent = '動画情報の取得に失敗しました。';
+          console.error('動画情報取得エラー:', error);
+        });
+    } else {
+      playerDiv.textContent = 'Video ID が見つかりません。URLを確認してください。';
+    }
+  </script>
+</body>
+</html>
