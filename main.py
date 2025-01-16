@@ -1,5 +1,14 @@
 from flask import Flask, render_template, request
 import requests
+import subprocess
+
+# Node.js コマンドを使って JavaScript ファイルを実行
+result = subprocess.run(['node', 'example.js'], capture_output=True, text=True)
+
+# 実行結果を表示
+print("Output:", result.stdout)
+print("Error:", result.stderr)
+
 
 app = Flask(__name__)
 
