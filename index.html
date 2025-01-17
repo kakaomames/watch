@@ -37,10 +37,14 @@
       // 動画を埋め込む
       playerDiv.innerHTML = `
         <video controls autoplay poster="https://img.youtube.com/vi/${videoId}/0.jpg" width="640" height="360">
+          <source src="https://inv-eu2-c.nadeko.net/api/manifest/dash/id/${videoId}?local=true&unique_res=1&check=k-d3xKR6toTVupFeE8BJCA9C2yNJ1A8oAgHrZsiejA8=" type="application/dash+xml" label="dash">
           <source src="https://inv-ca1-c.nadeko.net/latest_version?id=${videoId}&itag=18" type="video/mp4">
           <source src="https://inv-us2-c.nadeko.net/latest_version?id=${videoId}&itag=18" type="video/mp4">
+          <source src="https://inv-eu2-c.nadeko.net/latest_version?id=${videoId}&itag=18&check=CKHrSukM4Ptk1KKPAwFc1Q9C2yNJ1A8oAgHrZsiejA8=" type="video/mp4">
+          
           お使いのブラウザは動画タグをサポートしていません。
         </video>
+        <a href="https://inv-us2-c.nadeko.net/latest_version?id=${videoId}&itag=18">ダウンロード</a>
       `;
 
       // 動画情報を取得
