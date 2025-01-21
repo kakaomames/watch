@@ -2,27 +2,50 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>Base64 Encoder</title>
+    <title>Base64 Encoder with Copy Button</title>
 </head>
 <body>
+    <h2>画像をBase64にエンコード</h2>
+    
     <input type="file" id="fileInput">
-    <br>
+    <br><br>
+    
     <img id="imagePreview" style="max-width: 300px;">
-    <br>
-    <textarea id="base64Output" rows="100" cols="200"></textarea>
-
+    <br><br>
+    
+    <textarea id="base64Output" rows="10" cols="50" readonly></textarea>
+    <br><br>
+    
+    <button id="copyBtn">コピー</button>
+    
     <script>
+        // 画像ファイル選択時の処理
         document.getElementById("fileInput").addEventListener("change", function(event) {
             var file = event.target.files[0];
             if (file) {
                 var reader = new FileReader();
                 reader.onload = function(e) {
-                    var base64String = e.target.result.split(",")[1];
-                    document.getElementById("base64Output").value = base64String;
+                    // Base64データの生成
+                    var base64String = e.target.result.split(",")[1];  // data:image/png;base64, 部分を除去
+                    var base64Data = "data:image/png;base64," + base64String;  // data:image/png;base64, を追加
+                    // テキストエリアに表示
+                    document.getElementById("base64Output").value = base64Data;
+                    // 画像プレビューを表示
                     document.getElementById("imagePreview").src = e.target.result;
                 };
                 reader.readAsDataURL(file);
             }
+        });
+
+        // コピー処理
+        document.getElementById("copyBtn").addEventListener("click", function() {
+            // テキストエリアの内容をコピー
+            var textArea = document.getElementById("base64Output");
+            textArea.select(); // テキストエリアを選択
+            document.execCommand('copy'); // コピー
+
+            // コピー完了メッセージ（オプション）
+            alert("Base64データがコピーされました！");
         });
     </script>
 </body>
