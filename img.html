@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Base64 Encoder</title>
+</head>
+<body>
+    <input type="file" id="fileInput">
+    <br>
+    <img id="imagePreview" style="max-width: 300px;">
+    <br>
+    <textarea id="base64Output" rows="10" cols="50"></textarea>
+
+    <script>
+        document.getElementById("fileInput").addEventListener("change", function(event) {
+            var file = event.target.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var base64String = e.target.result.split(",")[1];
+                    document.getElementById("base64Output").value = base64String;
+                    document.getElementById("imagePreview").src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+</html>
