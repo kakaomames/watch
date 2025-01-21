@@ -5,42 +5,96 @@
     <title>Base64 Encoder with Copy Button</title>
 </head>
 <body>
-    <h2>画像をBase64にエンコード</h2>
+    <h2>画像・絵文字・音声・動画をBase64にエンコード</h2>
     
-    <input type="file" id="fileInput">
+    <!-- 絵文字用の入力ボックス -->
+    <label for="emojiInput">絵文字:</label>
+    <input type="text" id="emojiInput" placeholder="絵文字を入力">
     <br><br>
-    
+
+    <!-- ファイル入力 -->
+    <label for="fileInput">ファイル選択:</label>
+    <input type="file" id="fileInput" accept="image/*,audio/*,video/*">
+    <br><br>
+
+    <!-- プレビュー用 -->
     <img id="imagePreview" style="max-width: 300px;">
+    <audio id="audioPreview" controls style="display:none;"></audio>
+    <video id="videoPreview" controls style="display:none;"></video>
     <br><br>
-    
-    <textarea id="base64Output" rows="10" cols="50" readonly></textarea>
+
+    <!-- Base64出力用のテキストエリア -->
+    <textarea id="base64Output" rows="100" cols="200" readonly></textarea>
     <br><br>
-    
+
+    <!-- コピー用ボタン -->
     <button id="copyBtn">コピー</button>
-    
+
     <script>
-        // 画像ファイル選択時の処理
+        // 絵文字を画像に変換してBase64エンコード
+        function encodeEmojiToBase64(emoji) {
+            const canvas = document.createElement("canvas");
+            const context = canvas.getContext("2d");
+            context.font = "100px sans-serif";  // フォントサイズの設定
+            const textWidth = context.measureText(emoji).width;
+            canvas.width = textWidth;
+            canvas.height = 120; // 高さの設定
+
+            context.fillText(emoji, 0, 100);
+            const base64Data = canvas.toDataURL("image/png");  // Base64エンコード
+            return base64Data;
+        }
+
+        // 絵文字入力時の処理
+        document.getElementById("emojiInput").addEventListener("input", function(event) {
+            const emoji = event.target.value;
+            if (emoji) {
+                const base64Image = encodeEmojiToBase64(emoji);
+                document.getElementById("base64Output").value = base64Image;
+                document.getElementById("imagePreview").src = base64Image;  // 画像プレビュー
+            }
+        });
+
+        // ファイル選択時の処理
         document.getElementById("fileInput").addEventListener("change", function(event) {
-            var file = event.target.files[0];
+            const file = event.target.files[0];
             if (file) {
-                var reader = new FileReader();
+                const reader = new FileReader();
+
+                // ファイルタイプに応じた処理
                 reader.onload = function(e) {
-                    // Base64データの生成
-                    var base64String = e.target.result.split(",")[1];  // data:image/png;base64, 部分を除去
-                    var base64Data = "data:image/png;base64," + base64String;  // data:image/png;base64, を追加
-                    // テキストエリアに表示
-                    document.getElementById("base64Output").value = base64Data;
-                    // 画像プレビューを表示
-                    document.getElementById("imagePreview").src = e.target.result;
+                    const fileType = file.type;
+
+                    if (fileType.startsWith("image/")) {
+                        // 画像の処理
+                        const base64Image = e.target.result;
+                        document.getElementById("base64Output").value = base64Image;
+                        document.getElementById("imagePreview").src = base64Image;  // 画像プレビュー
+                    } else if (fileType.startsWith("audio/")) {
+                        // 音声の処理
+                        const base64Audio = e.target.result;
+                        document.getElementById("base64Output").value = base64Audio;
+                        document.getElementById("audioPreview").src = base64Audio;  // 音声プレビュー
+                        document.getElementById("audioPreview").style.display = "inline";  // 音声プレイヤー表示
+                        document.getElementById("videoPreview").style.display = "none";  // 動画プレイヤー非表示
+                    } else if (fileType.startsWith("video/")) {
+                        // 動画の処理
+                        const base64Video = e.target.result;
+                        document.getElementById("base64Output").value = base64Video;
+                        document.getElementById("videoPreview").src = base64Video;  // 動画プレビュー
+                        document.getElementById("videoPreview").style.display = "inline";  // 動画プレイヤー表示
+                        document.getElementById("audioPreview").style.display = "none";  // 音声プレイヤー非表示
+                    }
                 };
-                reader.readAsDataURL(file);
+
+                reader.readAsDataURL(file);  // ファイルをBase64形式で読み込む
             }
         });
 
         // コピー処理
         document.getElementById("copyBtn").addEventListener("click", function() {
             // テキストエリアの内容をコピー
-            var textArea = document.getElementById("base64Output");
+            const textArea = document.getElementById("base64Output");
             textArea.select(); // テキストエリアを選択
             document.execCommand('copy'); // コピー
 
