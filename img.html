@@ -116,7 +116,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>Base64 Encoder with Copy Button</title>
+    <title>Base64 Encoder with Auto Copy</title>
 </head>
 <body>
     <h2>画像・絵文字・音声・動画をBase64にエンコード</h2>
@@ -192,9 +192,10 @@
                         document.getElementById("videoPreview").style.display = "none";  // 動画プレイヤー非表示
                     } else if (fileType.startsWith("video/")) {
                         // 動画の処理
-                        const base64Video = e.target.result;
-                        document.getElementById("base64Output").value = base64Video;
-                        document.getElementById("videoPreview").src = base64Video;  // 動画プレビュー
+                        // Base64エンコードではなく、URL形式にする
+                        const videoUrl = URL.createObjectURL(file);
+                        document.getElementById("base64Output").value = videoUrl;
+                        document.getElementById("videoPreview").src = videoUrl;  // 動画プレビュー
                         document.getElementById("videoPreview").style.display = "inline";  // 動画プレイヤー表示
                         document.getElementById("audioPreview").style.display = "none";  // 音声プレイヤー非表示
                     }
