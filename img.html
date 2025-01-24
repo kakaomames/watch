@@ -116,7 +116,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>Base64 Encoder with Auto Copy</title>
+    <title>Base64 Encoder with Copy Button</title>
 </head>
 <body>
     <h2>画像・絵文字・音声・動画をBase64にエンコード</h2>
@@ -141,6 +141,8 @@
     <textarea id="base64Output" rows="10" cols="100" readonly></textarea>
     <br><br>
 
+    <button id="copyBtn">コピー</button> <!-- コピー用ボタン -->
+    
     <script>
         // 絵文字を画像に変換してBase64エンコード
         function encodeEmojiToBase64(emoji) {
@@ -163,9 +165,6 @@
                 const base64Image = encodeEmojiToBase64(emoji);
                 document.getElementById("base64Output").value = base64Image;
                 document.getElementById("imagePreview").src = base64Image;  // 画像プレビュー
-
-                // Base64を自動でコピー
-                copyToClipboard(base64Image);
             }
         });
 
@@ -173,105 +172,48 @@
         document.getElementById("fileInput").addEventListener("change", function(event) {
             const file = event.target.files[0];
             if (file) {
-                // ファイルのサイズが大きい場合の分割読み込み
-                if (file.size > 1024 * 1024 * 10) { // 10MB以上
-                    handleLargeFile(file);
-                } else {
-                    handleNormalFile(file);
-                }
-            }
-        });
-
-        // 通常のファイル（小さなファイル）の処理
-        function handleNormalFile(file) {
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                const base64Data = e.target.result;
-                document.getElementById("base64Output").value = base64Data;
-
-                // プレビュー処理
-                if (file.type.startsWith("image/")) {
-                    document.getElementById("imagePreview").src = base64Data;  // 画像プレビュー
-                } else if (file.type.startsWith("audio/")) {
-                    document.getElementById("audioPreview").src = base64Data;  // 音声プレビュー
-                    document.getElementById("audioPreview").style.display = "inline";  // 音声プレイヤー表示
-                    document.getElementById("videoPreview").style.display = "none";  // 動画プレイヤー非表示
-                } else if (file.type.startsWith("video/")) {
-                    document.getElementById("videoPreview").src = base64Data;  // 動画プレビュー
-                    document.getElementById("videoPreview").style.display = "inline";  // 動画プレイヤー表示
-                    document.getElementById("audioPreview").style.display = "none";  // 音声プレイヤー非表示
-                }
-
-                // Base64を自動でコピー
-                copyToClipboard(base64Data);
-            };
-
-            reader.readAsDataURL(file);  // ファイルをBase64形式で読み込む
-        }
-
-        // 大きなファイル（10MB以上）の処理
-        function handleLargeFile(file) {
-            // 動画はBase64エンコードせずにURLに変換（Base64でメモリを消費するため）
-            if (file.type.startsWith("video/")) {
-                const fileURL = URL.createObjectURL(file);
-                document.getElementById("base64Output").value = fileURL;
-                document.getElementById("videoPreview").src = fileURL; // 動画プレビュー
-                document.getElementById("videoPreview").style.display = "inline"; // 動画プレイヤー表示
-                document.getElementById("audioPreview").style.display = "none"; // 音声プレイヤー非表示
-
-                // URLを自動でコピー
-                copyToClipboard(fileURL);
-            } else {
-                // それ以外のファイルの場合（画像や音声）は分割読み込み
-                const CHUNK_SIZE = 1024 * 1024 * 2; // 2MBごとに分割
-                let offset = 0;
                 const reader = new FileReader();
-                const chunks = [];
 
+                // ファイルタイプに応じた処理
                 reader.onload = function(e) {
-                    chunks.push(e.target.result);
-                    offset += CHUNK_SIZE;
+                    const fileType = file.type;
 
-                    if (offset < file.size) {
-                        readNextChunk();  // 次のチャンクを読み込む
-                    } else {
-                        const base64Data = chunks.join('');
-                        document.getElementById("base64Output").value = base64Data;
-
-                        // プレビュー処理（最初のチャンクの内容をプレビューに反映）
-                        if (file.type.startsWith("image/")) {
-                            document.getElementById("imagePreview").src = base64Data;  // 画像プレビュー
-                        } else if (file.type.startsWith("audio/")) {
-                            document.getElementById("audioPreview").src = base64Data;  // 音声プレビュー
-                            document.getElementById("audioPreview").style.display = "inline";  // 音声プレイヤー表示
-                            document.getElementById("videoPreview").style.display = "none";  // 動画プレイヤー非表示
-                        }
-
-                        // Base64を自動でコピー
-                        copyToClipboard(base64Data);
+                    if (fileType.startsWith("image/")) {
+                        // 画像の処理
+                        const base64Image = e.target.result;
+                        document.getElementById("base64Output").value = base64Image;
+                        document.getElementById("imagePreview").src = base64Image;  // 画像プレビュー
+                    } else if (fileType.startsWith("audio/")) {
+                        // 音声の処理
+                        const base64Audio = e.target.result;
+                        document.getElementById("base64Output").value = base64Audio;
+                        document.getElementById("audioPreview").src = base64Audio;  // 音声プレビュー
+                        document.getElementById("audioPreview").style.display = "inline";  // 音声プレイヤー表示
+                        document.getElementById("videoPreview").style.display = "none";  // 動画プレイヤー非表示
+                    } else if (fileType.startsWith("video/")) {
+                        // 動画の処理
+                        const base64Video = e.target.result;
+                        document.getElementById("base64Output").value = base64Video;
+                        document.getElementById("videoPreview").src = base64Video;  // 動画プレビュー
+                        document.getElementById("videoPreview").style.display = "inline";  // 動画プレイヤー表示
+                        document.getElementById("audioPreview").style.display = "none";  // 音声プレイヤー非表示
                     }
                 };
 
-                // 次のチャンクを読み込む
-                function readNextChunk() {
-                    const slice = file.slice(offset, offset + CHUNK_SIZE);
-                    reader.readAsDataURL(slice);
-                }
-
-                // 初回チャンクの読み込み
-                readNextChunk();
+                reader.readAsDataURL(file);  // ファイルをBase64形式で読み込む
             }
-        }
+        });
 
-        // Clipboard APIでBase64データをクリップボードにコピーする関数
-        function copyToClipboard(data) {
-            navigator.clipboard.writeText(data).then(function() {
-                console.log("データがクリップボードにコピーされました！");
-            }).catch(function(err) {
-                console.error("クリップボードへのコピーに失敗しました:", err);
-            });
-        }
+        // コピー処理
+        document.getElementById("copyBtn").addEventListener("click", function() {
+            // テキストエリアの内容をコピー
+            const textArea = document.getElementById("base64Output");
+            textArea.select(); // テキストエリアを選択
+            document.execCommand('copy'); // コピー
+
+            // コピー完了メッセージ（オプション）
+            alert("Base64データがコピーされました！");
+        });
     </script>
 </body>
 </html>
