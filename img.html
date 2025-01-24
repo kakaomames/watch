@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>Base64 Encoder with Copy Button</title>
+    <title>Base64 Encoder with Auto Copy</title>
 </head>
 <body>
     <h2>画像・絵文字・音声・動画をBase64にエンコード</h2>
@@ -24,10 +24,124 @@
     <br><br>
 
     <!-- Base64出力用のテキストエリア -->
+    <textarea id="base64Output" rows="10" cols="100" readonly></textarea>
+    <br><br>
+
+    <script>
+        // 絵文字を画像に変換してBase64エンコード
+        function encodeEmojiToBase64(emoji) {
+            const canvas = document.createElement("canvas");
+            const context = canvas.getContext("2d");
+            context.font = "100px sans-serif";  // フォントサイズの設定
+            const textWidth = context.measureText(emoji).width;
+            canvas.width = textWidth;
+            canvas.height = 120; // 高さの設定
+
+            context.fillText(emoji, 0, 100);
+            const base64Data = canvas.toDataURL("image/png");  // Base64エンコード
+            return base64Data;
+        }
+
+        // 絵文字入力時の処理
+        document.getElementById("emojiInput").addEventListener("input", function(event) {
+            const emoji = event.target.value;
+            if (emoji) {
+                const base64Image = encodeEmojiToBase64(emoji);
+                document.getElementById("base64Output").value = base64Image;
+                document.getElementById("imagePreview").src = base64Image;  // 画像プレビュー
+
+                // Base64を自動でコピー
+                copyToClipboard(base64Image);
+            }
+        });
+
+        // ファイル選択時の処理
+        document.getElementById("fileInput").addEventListener("change", function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+
+                // ファイルタイプに応じた処理
+                reader.onload = function(e) {
+                    const fileType = file.type;
+
+                    if (fileType.startsWith("image/")) {
+                        // 画像の処理
+                        const base64Image = e.target.result;
+                        document.getElementById("base64Output").value = base64Image;
+                        document.getElementById("imagePreview").src = base64Image;  // 画像プレビュー
+
+                        // Base64を自動でコピー
+                        copyToClipboard(base64Image);
+                    } else if (fileType.startsWith("audio/")) {
+                        // 音声の処理
+                        const base64Audio = e.target.result;
+                        document.getElementById("base64Output").value = base64Audio;
+                        document.getElementById("audioPreview").src = base64Audio;  // 音声プレビュー
+                        document.getElementById("audioPreview").style.display = "inline";  // 音声プレイヤー表示
+                        document.getElementById("videoPreview").style.display = "none";  // 動画プレイヤー非表示
+
+                        // Base64を自動でコピー
+                        copyToClipboard(base64Audio);
+                    } else if (fileType.startsWith("video/")) {
+                        // 動画の処理
+                        const base64Video = e.target.result;
+                        document.getElementById("base64Output").value = base64Video;
+                        document.getElementById("videoPreview").src = base64Video;  // 動画プレビュー
+                        document.getElementById("videoPreview").style.display = "inline";  // 動画プレイヤー表示
+                        document.getElementById("audioPreview").style.display = "none";  // 音声プレイヤー非表示
+
+                        // Base64を自動でコピー
+                        copyToClipboard(base64Video);
+                    }
+                };
+
+                reader.readAsDataURL(file);  // ファイルをBase64形式で読み込む
+            }
+        });
+
+        // Clipboard APIでBase64データをクリップボードにコピーする関数
+        function copyToClipboard(data) {
+            navigator.clipboard.writeText(data).then(function() {
+                console.log("Base64データがクリップボードにコピーされました！");
+            }).catch(function(err) {
+                console.error("クリップボードへのコピーに失敗しました:", err);
+            });
+        }
+    </script>
+</body>
+</html>
+
+<!--<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Base64 Encoder with Copy Button</title>
+</head>
+<body>
+    <h2>画像・絵文字・音声・動画をBase64にエンコード</h2>
+    
+    <!-- 絵文字用の入力ボックス --
+    <label for="emojiInput">絵文字:</label>
+    <input type="text" id="emojiInput" placeholder="絵文字を入力">
+    <br><br>
+
+    <!-- ファイル入力 --
+    <label for="fileInput">ファイル選択:</label>
+    <input type="file" id="fileInput" accept="image/*,audio/*,video/*">
+    <br><br>
+
+    <!-- プレビュー用 --
+    <img id="imagePreview" style="max-width: 300px;">
+    <audio id="audioPreview" controls style="display:none;"></audio>
+    <video id="videoPreview" controls style="display:none;"></video>
+    <br><br>
+
+    <!-- Base64出力用のテキストエリア --
     <textarea id="base64Output" rows="100" cols="200" readonly></textarea>
     <br><br>
 
-    <!-- コピー用ボタン -->
+    <!-- コピー用ボタン --
     <button id="copyBtn">コピー</button>
 
     <script>
@@ -104,3 +218,4 @@
     </script>
 </body>
 </html>
+-->
