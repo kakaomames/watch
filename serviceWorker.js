@@ -1,7 +1,12 @@
 const CACHE_NAME = "pwa-cache-v1";
 const urlsToCache = [
   "/",
-  "/index.html"
+  "./index.html",
+  "./img.html",
+  "./hhh.html",
+  "/index.html",
+  "/img.html",
+  "/hhh.html"
 ];
 
 // インストール時にキャッシュする
