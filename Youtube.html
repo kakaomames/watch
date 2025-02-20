@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>動画表示サンプル</title>
+</head>
+<body>
+  <h1>動画URLを入力してください</h1>
+  
+  <!-- URL入力フォーム -->
+  <input type="text" id="videoURL" placeholder="https://www.youtube.com/watch?v=<videoid>" />
+  <button onclick="processVideoURL()">動画を表示</button>
+  
+  <!-- 動画表示エリア -->
+  <div id="videoContainer"></div>
+  
+  <script>
+    // ユーザーが入力したURLを処理する関数
+    function processVideoURL() {
+      const inputURL = document.getElementById('videoURL').value; // 入力されたURLを取得
+      
+      // 正規表現を使ってURLからvideoidを取得
+      const match = inputURL.match(/https:\/\/www\.youtube\.com\/watch\?v=([^&]+)/);
+      if (match && match[1]) {
+        const videoid = match[1];
+
+        // 新しいURLを生成
+        const newURL = `https://inv-ca1-c.nadeko.net/latest_version?id=${videoid}&itag=18&check`;
+
+        // URLから動画をフェッチしてBlobに変換
+        fetch(newURL)
+          .then(response => response.blob())
+          .then(blob => {
+            // BlobをオブジェクトURLに変換してvideo要素に表示
+            const videoURL = URL.createObjectURL(blob);
+            const videoElement = document.createElement('video');
+            videoElement.src = videoURL;
+            videoElement.controls = true; // 動画のコントロールを有効にする
+            document.getElementById('videoContainer').innerHTML = ''; // 前の動画を消去
+            document.getElementById('videoContainer').appendChild(videoElement); // 新しい動画を追加
+          })
+          .catch(error => console.error("動画の取得に失敗しました:", error));
+      } else {
+        console.error("無効なURLです");
+      }
+    }
+  </script>
+</body>
+</html>
