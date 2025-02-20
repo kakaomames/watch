@@ -125,6 +125,14 @@ if ("serviceWorker" in navigator) {
 <head>
     <meta charset="UTF-8">
     <title>Base64 Encoder with Auto Copy</title>
+      <link rel="manifest" href="manifest.json">
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./serviceWorker.js")
+    .then(() => console.log("Service Worker registered"))
+    .catch((err) => console.log("Service Worker registration failed:", err));
+}
+</script>
 </head>
 <body>
     <h2>画像・絵文字・音声・動画をBase64にエンコード</h2>
