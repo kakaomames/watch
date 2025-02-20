@@ -1,7 +1,7 @@
 {
   "name": "base64 encode",
   "short_name": "base64 encode",
-  "start_url": "./",
+  "start_url": "./img",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",
