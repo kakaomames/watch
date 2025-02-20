@@ -6,6 +6,8 @@ const urlsToCache = [
   "./hhh.html",
   "/index.html",
   "/img.html",
+  "/Youtube.html",
+  "./Youtube.html",
   "/hhh.html"
 ];
 
