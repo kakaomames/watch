@@ -4,6 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title id="video-title"></title>
+  <link rel="manifest" href="manifest.json">
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./serviceWorker.js")
+    .then(() => console.log("Service Worker registered"))
+    .catch((err) => console.log("Service Worker registration failed:", err));
+}
+</script>
 </head>
 <body>
   <form class="pure-form" action="/v/search" method="get">
