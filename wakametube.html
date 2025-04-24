@@ -1,0 +1,55 @@
+  <iframe style="aspect-ratio: 16 / 9;" 
+          id="videoFrame" 
+          data-video-id="<%= videoData.videoId %>" 
+          src="about:blank" 
+          frameborder="0" 
+          allowfullscreen 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+          referrerpolicy="strict-origin-when-cross-origin">
+  </iframe>
+  <script>
+    const CACHE_KEY = "videoConfigCache";
+    const CACHE_DURATION = 60 * 1000; // 1分 (60秒)
+    const CONFIG_URL = "https://raw.githubusercontent.com/siawaseok3/wakame/master/video_config.json";
+
+    function updateIframe(params) {
+      const iframe = document.getElementById("videoFrame");
+      const videoId = iframe.getAttribute("data-video-id"); // EJSから受け取った動画ID
+      if (!videoId) {
+        console.error("Error: videoId is missing.");
+        return;
+      }
+      iframe.src = `https://www.youtubeeducation.com/embed/${videoId}${params}`;
+    }
+
+    function fetchVideoConfig() {
+      fetch(CONFIG_URL, { cache: "no-store" })
+        .then(response => {
+          if (!response.ok) throw new Error("Network response was not ok");
+          return response.json();
+        })
+        .then(data => {
+          const params = data.params || "エラー"; 
+          const cacheData = {
+            params,
+            timestamp: Date.now()
+          };
+          localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+          updateIframe(params);
+        })
+        .catch(error => console.error("Error loading video config:", error));
+    }
+
+    // キャッシュの確認
+    const cache = localStorage.getItem(CACHE_KEY);
+    if (cache) {
+      const { params, timestamp } = JSON.parse(cache);
+      if (Date.now() - timestamp < CACHE_DURATION) {
+        updateIframe(params); // 1分以内ならキャッシュ使用
+      } else {
+        fetchVideoConfig(); // 1分以上なら新しく取得
+      }
+    } else {
+      fetchVideoConfig(); // 初回アクセス時は取得
+    }
+  </script>
