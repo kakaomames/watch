@@ -19,7 +19,7 @@
         console.error("Error: videoId is missing.");
         return;
       }
-      iframe.src = `https://www.youtubeeducation.com/embed/${videoId}${params}`;
+      iframe.src = ``;
     }
 
     function fetchVideoConfig() {
@@ -53,3 +53,28 @@
       fetchVideoConfig(); // 初回アクセス時は取得
     }
   </script>
+<iframe id="video-frame" width="600" height="400" style="border:none;"></iframe>
+
+    <script>
+        // URLを取得
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        // 'v' パラメータから videoid を取得
+        const videoid = urlParams.get('v');
+        
+        // videoidを辞書形式で保存
+        const videoDict = {
+            videoid: videoid
+        };
+
+        // 結果を表示
+        document.getElementById('videoid-output').textContent = `Video ID: ${videoDict.videoid}`;
+
+        // iframeにURLを設定
+        const iframe = document.getElementById('video-frame');
+        if (videoDict.videoid) {
+            iframe.src = `https://www.youtubeeducation.com/embed/${videoDict.videoid}${params}`;
+        } else {
+            iframe.src = ''; // videoidがない場合はiframeを空にする
+        }
+    </script>
